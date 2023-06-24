@@ -2,10 +2,17 @@ import React from "react";
 import PropTypes from 'prop-types';
 import * as yup from 'yup'
 import { Formik } from "formik";
-import { nanoid } from "nanoid";
+
 import { BsPersonFill, BsFillTelephoneFill } from 'react-icons/bs';
 import {IoMdPersonAdd} from 'react-icons/io'
-import {Form, FormField, FieldFormik, ErrorMessage, FormButton, LabelForm } from './Contact.styled'
+import {
+	Form,
+	FormField,
+	FieldFormik,
+	ErrorMessage,
+	FormButton,
+	LabelForm
+} from './Contact.styled'
 
 const schema = yup.object().shape({
 	name: yup
@@ -25,21 +32,20 @@ const schema = yup.object().shape({
 		.required(),
 });
 
+const initialValues = { name: '', number: '' };
+
 export const ContactForm = ({ onAddContact }) => {
 	return (
 		<Formik
-			initialValues={{
-				name: '',
-				number: '',
-			}}
+			initialValues={initialValues}
 			onSubmit={(values, { resetForm }) => {
-				onAddContact({ id: nanoid(), ...values });
+				onAddContact({ ...values });
 				resetForm();
 			}}
 			validationSchema={schema}
 		>
 			<Form autoComplete="off">
-				<FormField htmlFor="name">
+				<FormField>
 					<LabelForm>
 						< BsPersonFill />
 						Name
@@ -47,13 +53,11 @@ export const ContactForm = ({ onAddContact }) => {
 					<FieldFormik
 						type="text"
 						name="name"
-						pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-						title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-						required
+						placeholder="Your name"
 					/>
 					<ErrorMessage name="name" component="span" />
 				</FormField>
-				<FormField htmlFor="number">
+				<FormField>
 					<LabelForm>
 						< BsFillTelephoneFill />
 						Number
@@ -61,6 +65,7 @@ export const ContactForm = ({ onAddContact }) => {
 					<FieldFormik
 						type="tel"
 						name="number"
+						placeholder="+38(096)930-42-16"
 						pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
 						title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
 						required
@@ -78,4 +83,5 @@ export const ContactForm = ({ onAddContact }) => {
 
 ContactForm.propType = {
 	onSubmit: PropTypes.func.isRequired,
+	onAddContact: PropTypes.func.isRequired,
 };
