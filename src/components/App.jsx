@@ -15,23 +15,6 @@ import useLocalStorage from "hooks/useLocalStorage";
 export default function App() {
 	const [contacts, setContacts] = useLocalStorage('contacts', initionalContacts);
 	const [filter, setFilter] = useState('');
-	// state = {
-	// 	contacts: ,
-	// 	filter: '',
-	// }
-
-	// componentDidMount() {
-	// 	const contactsFormLocalStorage = localStorage.getItem('contacts');
-	// 	const contactsParsed = JSON.parse(contactsFormLocalStorage);
-	// 	if (!contactsParsed) return;
-	// 	this.setState({ contacts: contactsParsed });
-	// }
-
-	// componentDidUpdate(prevProps, prevState) {
-	// 	if (this.state.contacts !== prevState.contacts) {
-	// 		localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-	// 	}
-	// }
 
 	const addContact = newContact => {
 		const isExist = contacts.some(
