@@ -12,6 +12,7 @@ import { Container } from './App.styled';
 
 import initionalContacts from '../data/contacts';
 import useLocalStorage from "hooks/useLocalStorage";
+
 export default function App() {
 	const [contacts, setContacts] = useLocalStorage('contacts', initionalContacts);
 	const [filter, setFilter] = useState('');

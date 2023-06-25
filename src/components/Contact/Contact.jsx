@@ -1,83 +1,86 @@
-import React from "react";
+import { useEffect } from "react";
+import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
-import * as yup from 'yup'
-import { Formik } from "formik";
-
 import { BsPersonFill, BsFillTelephoneFill } from 'react-icons/bs';
 import {IoMdPersonAdd} from 'react-icons/io'
 import {
 	Form,
 	FormField,
-	FieldFormik,
+	FieldInput,
 	ErrorMessage,
 	FormButton,
 	LabelForm
 } from './Contact.styled'
 
-const schema = yup.object().shape({
-	name: yup
-		.string()
-		.trim()
-		.matches(
-			/^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/,
-			'Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d`Artagnan')
-		.required(),
-	number: yup
-		.string()
-		.trim()
-		.matches(
-			/\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/,
-			'Phone number must be digits and can contain spaces, dashes, parentheses and can start with +'
-		)
-		.required(),
-});
-
-const initialValues = { name: '', number: '' };
-
 export const ContactForm = ({ onAddContact }) => {
+	const {
+		register,
+		handleSubmit,
+		setFocus,
+		formState: { errors, isValid },
+		reset,
+	} = useForm({
+		mode: 'onBlur',
+	});
+
+	useEffect(() => {
+		setFocus('name');
+	}, [setFocus]);
+	
 	return (
-		<Formik
-			initialValues={initialValues}
-			onSubmit={(values, { resetForm }) => {
-				onAddContact({ ...values });
-				resetForm();
-			}}
-			validationSchema={schema}
+		<Form autoComplete="off"
+			onSubmit={handleSubmit(data => {
+				onAddContact({ ...data });
+				reset();
+			})}
 		>
-			<Form autoComplete="off">
-				<FormField>
+				<FormField htmlFor="name">
 					<LabelForm>
 						< BsPersonFill />
 						Name
 					</LabelForm>
-					<FieldFormik
+					<FieldInput
 						type="text"
-						name="name"
-						placeholder="Your name"
-					/>
-					<ErrorMessage name="name" component="span" />
+					placeholder="Your name"
+					{...register('name', {
+						required: `This field is required`,
+						patern: /^[A-Za-z\u0080-\uFFFF ']+$/,
+					})}
+				/>
+				{errors?.name && (
+					<ErrorMessage>
+						{errors?.name?.message || `Name may only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan`}
+						</ErrorMessage>
+				)}
 				</FormField>
-				<FormField>
+				<FormField htmlFor="number">
 					<LabelForm>
 						< BsFillTelephoneFill />
 						Number
 					</LabelForm>
-					<FieldFormik
+					<FieldInput
 						type="tel"
-						name="number"
 						placeholder="+38(096)930-42-16"
-						pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-						title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-						required
-					/>
-					<ErrorMessage name="number" component="span" />
+						{...register('number', {
+							required: `This field is required`,
+							minLength: {
+								value: 7,
+								message: `Min 7 numbers. Phone number must be digits and can contain spaces, dashes, parentheses and can start with +`,
+							},
+							pattern: /\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}/,
+						})}
+				/>
+				{errors?.number && (
+					<ErrorMessage>
+						{errors?.number?.message || `Phone number must be digits and can contain spaces, dashes, parentheses and can start with +`}
+						</ErrorMessage>
+				)}
 				</FormField>
-				<FormButton type="sumbmit">
+				<FormButton type="sumbmit" disabled={!isValid}>
 					<IoMdPersonAdd size="16" />
 					Add contact
 				</FormButton>
 			</Form>
-		</Formik>
 	);
 };
 
